@@ -43,9 +43,9 @@ void websocket_client_config::add_subprotocol(const ::utility::string_t& name)
     m_headers.add(g_subProtocolHeader, name);
 }
 
-std::vector<::utility::string_t> websocket_client_config::subprotocols() const
+std::vector< ::utility::string_t > websocket_client_config::subprotocols() const
 {
-    std::vector<::utility::string_t> values;
+    std::vector< ::utility::string_t > values;
     auto subprotocolHeader = m_headers.find(g_subProtocolHeader);
     if (subprotocolHeader != m_headers.end())
     {
