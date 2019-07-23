@@ -662,6 +662,32 @@ public:
     }
 
 private:
+    std::function<void (void)> join_thread(const bool connecting, const std::error_code ec, const short unsigned int& closeCode, std::string reason, std::thread& t) { 
+        std::function<void (void)> func = [&t] () 
+        {
+            if (t.joinable())
+            {
+                t.join();
+            }
+        };
+
+        if (connecting)
+        {
+            websocket_exception exc(ec, build_error_msg(ec, "set_fail_handler"));
+            m_connect_tce.set_exception(exc);
+        }
+        if (m_external_close_handler)
+        {
+            m_external_close_handler(
+            static_cast<websocket_close_status>(closeCode), utility::conversions::to_string_t(reason), ec);
+        }
+        // Making a local copy of the TCE prevents it from being destroyed along with "this"
+        auto tceref = m_close_tce;
+        tceref.set();
+
+        return func;
+    }
+
     template<typename WebsocketConfigType>
     void shutdown_wspp_impl(const websocketpp::connection_hdl& con_hdl, bool connecting)
     {
@@ -679,29 +705,7 @@ private:
         client.stop_perpetual();
 
         // Can't join thread directly since it is the current thread.
-        pplx::create_task([this, connecting, ec, closeCode, reason] {
-            {
-                std::lock_guard<std::mutex> lock(m_wspp_client_lock);
-                if (m_thread.joinable())
-                {
-                    m_thread.join();
-                }
-            } // unlock
-
-            if (connecting)
-            {
-                websocket_exception exc(ec, build_error_msg(ec, "set_fail_handler"));
-                m_connect_tce.set_exception(exc);
-            }
-            if (m_external_close_handler)
-            {
-                m_external_close_handler(
-                    static_cast<websocket_close_status>(closeCode), utility::conversions::to_string_t(reason), ec);
-            }
-            // Making a local copy of the TCE prevents it from being destroyed along with "this"
-            auto tceref = m_close_tce;
-            tceref.set();
-        });
+        pplx::create_task(this->join_thread(connecting,ec,closeCode,reason,m_thread));
     }
 
     template<typename WebsocketClientType>
