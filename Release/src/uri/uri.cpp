@@ -677,7 +677,7 @@ static std::string decode_template(const String& encoded)
 
             raw.push_back(static_cast<char>(decimal_value));
         }
-        else if (*iter > 127 || *iter < 0)
+        else if (*iter > 127)
         {
             throw uri_exception("Invalid encoded URI string, must be entirely ascii");
         }
