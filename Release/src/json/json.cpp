@@ -220,7 +220,7 @@ web::json::value web::json::value::object(bool keep_order)
     );
 }
 
-web::json::value web::json::value::object(std::vector<std::pair<::utility::string_t, value>> fields, bool keep_order)
+web::json::value web::json::value::object(std::vector<std::pair< ::utility::string_t, value >> fields, bool keep_order)
 {
     std::unique_ptr<details::_Value> ptr =
         utility::details::make_unique<details::_Object>(std::move(fields), keep_order);
@@ -299,7 +299,7 @@ bool web::json::number::is_uint32() const
     switch (m_type)
     {
         case signed_type: return m_intval >= 0 && m_intval <= (std::numeric_limits<uint32_t>::max)();
-        case unsigned_type: return m_uintval <= (std::numeric_limits<uint32_t>::max)();
+        case unsigned_type: return m_uintval <= (unsigned)(std::numeric_limits<uint32_t>::max)();
         case double_type:
         default: return false;
     }
