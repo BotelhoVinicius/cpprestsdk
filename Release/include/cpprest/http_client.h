@@ -711,7 +711,7 @@ public:
     }
 
 private:
-    std::shared_ptr<::web::http::client::http_pipeline> m_pipeline;
+    std::shared_ptr< ::web::http::client::http_pipeline > m_pipeline;
 };
 
 namespace details

@@ -22,7 +22,7 @@ class zero_memory_deleter
 public:
     _ASYNCRTIMP void operator()(::utility::string_t* data) const;
 };
-typedef std::unique_ptr<::utility::string_t, zero_memory_deleter> plaintext_string;
+typedef std::unique_ptr< ::utility::string_t, zero_memory_deleter > plaintext_string;
 
 #ifdef _WIN32
 #if _WIN32_WINNT >= _WIN32_WINNT_VISTA
